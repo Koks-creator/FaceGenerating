@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+xdddd
+
+<form method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+
+    {{ form.gen_num_field.label }}
+    {{ form.gen_num_field() }}
+    {% if form.is_submitted() and form.gen_num_field.errors %}
+        {% for error in form.gen_num_field.errors %}
+            <span class="form-error">{{ error }}</span>
+        {% endfor %}
+    {% endif %}
+
+    {{ form.models_list_field.label }}
+    {{ form.models_list_field() }}
+    {% if form.is_submitted() and form.models_list_field.errors %}
+        {% for error in form.models_list_field.errors %}
+            <span class="form-error">{{ error }}</span>
+        {% endfor %}
+    {% endif %}
+
+    {{ form.submit_field.label }}
+    {{ form.submit_field() }}
+
+    {% if file_names %}
+        {% for file_name in file_names %}
+            <img src="{{ url_for('static', filename='temp_uploads/' ~ file_name) }}">
+        {% endfor %}
+    {% endif %}
+   
+
+
+</form>
+{% endblock content %}

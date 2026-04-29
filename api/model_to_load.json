@@ -1,0 +1,10 @@
+{
+    "dcgan": {
+        "filename": "generator_dcgan.h5",
+        "load_attention": false
+    },
+    "wganv4": {
+        "filename": "wganv4_generator.h5",
+        "load_attention": true
+    }
+}
