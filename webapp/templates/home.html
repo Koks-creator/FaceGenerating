@@ -1,37 +1,122 @@
 {% extends 'layout.html' %}
+{% block title %}Generate — Face Generator{% endblock %}
+
+{% block head_extra %}
+<style>
+    .face-tile {
+        display: block; width: 100%; padding: 0;
+        border: 1px solid var(--glass-border);
+        border-radius: 12px; overflow: hidden;
+        background: rgba(0,0,0,0.3); cursor: pointer;
+        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .face-tile:hover {
+        transform: translateY(-3px);
+        border-color: var(--accent);
+        box-shadow: 0 10px 30px rgba(167,139,250,.25);
+    }
+    .face-tile img {
+        width: 100%; aspect-ratio: 1; object-fit: cover; display: block;
+    }
+    #lightbox-img { max-height: 85vh; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+    .field-hint { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+</style>
+{% endblock %}
 
 {% block content %}
-xdddd
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
 
-<form method="post" enctype="multipart/form-data">
-    {{ form.hidden_tag() }}
+        <div class="glass p-4 p-md-5 mb-4">
+            <h1 class="h3 fw-bold mb-1">Generate Synthetic Faces</h1>
+            <p class="field-hint mb-4">Pick a model, set the count, hit generate.</p>
 
-    {{ form.gen_num_field.label }}
-    {{ form.gen_num_field() }}
-    {% if form.is_submitted() and form.gen_num_field.errors %}
-        {% for error in form.gen_num_field.errors %}
-            <span class="form-error">{{ error }}</span>
-        {% endfor %}
-    {% endif %}
+            <form method="post" id="generate-form" novalidate>
+                {{ form.hidden_tag() }}
 
-    {{ form.models_list_field.label }}
-    {{ form.models_list_field() }}
-    {% if form.is_submitted() and form.models_list_field.errors %}
-        {% for error in form.models_list_field.errors %}
-            <span class="form-error">{{ error }}</span>
-        {% endfor %}
-    {% endif %}
+                <div class="mb-3">
+                    <label for="{{ form.gen_num_field.id }}" class="form-label">
+                        {{ form.gen_num_field.label.text }}
+                    </label>
+                    {{ form.gen_num_field(
+                        class="form-control form-control-lg" + (" is-invalid" if form.gen_num_field.errors else ""),
+                        min=1, max=32, placeholder="e.g. 8"
+                    ) }}
+                    <div class="field-hint mt-1">Between 1 and 32.</div>
+                    {% for error in form.gen_num_field.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
 
-    {{ form.submit_field.label }}
-    {{ form.submit_field() }}
+                <div class="mb-4">
+                    <label for="{{ form.models_list_field.id }}" class="form-label">
+                        {{ form.models_list_field.label.text }}
+                    </label>
+                    {{ form.models_list_field(
+                        class="form-select form-select-lg" + (" is-invalid" if form.models_list_field.errors else "")
+                    ) }}
+                    {% for error in form.models_list_field.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
 
-    {% if file_names %}
-        {% for file_name in file_names %}
-            <img src="{{ url_for('static', filename='temp_uploads/' ~ file_name) }}">
-        {% endfor %}
-    {% endif %}
-   
+                {{ form.submit_field(class="btn btn-gradient btn-lg w-100", value="Generate") }}
+            </form>
+        </div>
 
+        {% if file_names %}
+            <div class="glass p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 fw-semibold mb-0">Results</h2>
+                    <span class="badge bg-secondary">{{ file_names|length }} face{{ '' if file_names|length == 1 else 's' }}</span>
+                </div>
 
-</form>
-{% endblock content %}
+                <div class="row g-3">
+                    {% for file_name in file_names %}
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <button type="button" class="face-tile"
+                                    data-bs-toggle="modal" data-bs-target="#lightbox"
+                                    data-img="{{ url_for('static', filename='temp_uploads/' ~ file_name) }}">
+                                <img src="{{ url_for('static', filename='temp_uploads/' ~ file_name) }}"
+                                     alt="Generated face {{ loop.index }}" loading="lazy">
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- Lightbox -->
+<div class="modal fade" id="lightbox" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent border-0 align-items-end">
+            <button type="button" class="btn-close btn-close-white mb-2" data-bs-dismiss="modal" aria-label="Close"></button>
+            <img id="lightbox-img" src="" alt="" class="img-fluid rounded w-100">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // lightbox: pull clicked tile src into modal img
+    document.querySelectorAll('.face-tile').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('lightbox-img').src = btn.dataset.img;
+        });
+    });
+
+    // loading state on submit
+    const form = document.getElementById('generate-form');
+    form?.addEventListener('submit', () => {
+        const btn = form.querySelector('input[type=submit], button[type=submit]');
+        if (!btn) return;
+        btn.disabled = true;
+        if (btn.tagName === 'INPUT') btn.value = 'Generating…';
+        else btn.textContent = 'Generating…';
+    });
+</script>
+{% endblock %}
