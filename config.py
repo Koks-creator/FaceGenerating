@@ -15,9 +15,6 @@ class Config:
     # FOLDERS
     MODELS_PATH: Union[str, os.PathLike, Path] = Path(ROOT_PATH) / "models"
 
-    # FACE GENERATOR
-    LATENT_DIM: int = 100 # static, don't change
-
     # DATABASE
     DATABASE_URL: str = f"sqlite:///{Path(ROOT_PATH)}/data/app.db"
 
@@ -51,7 +48,7 @@ class Config:
     WEB_APP_DEBUG: bool = True
     WEB_APP_LOG_FILE: str = Path(ROOT_PATH) / "logs" / "web_app.logs"
     WEB_APP_TEMP_UPLOADS_FOLDER =  Path(ROOT_PATH) / "webapp" / "static" / "temp_uploads"
-    WEB_APP_FILES_LIFE_TIME: int = 300
+    WEB_APP_FILES_LIFE_TIME: int = 60
     WEB_APP_USE_SSL: bool = False
     WEB_APP_SSL_FOLDER: str = f"{ROOT_PATH}/ocr_webapp/ssl_cert"
     WEB_APP_TESTING: bool = False
