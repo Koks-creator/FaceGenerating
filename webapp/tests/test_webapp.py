@@ -9,6 +9,14 @@ from PIL import Image
 
 from webapp import app
 
+"""
+mock_post.called              # bool: czy w ogóle był wołany (== call_count > 0)
+mock_post.call_args           # argumenty OSTATNIEGO wywołania
+mock_post.call_args_list      # lista argumentów WSZYSTKICH wywołań po kolei
+mock_post.assert_called_once()           # twierdzi, że było dokładnie 1 wywołanie
+mock_post.assert_not_called()            # twierdzi, że było 0 wywołań
+mock_post.assert_called_with(...)        # twierdzi, że ostatnie wołanie miało takie argumenty
+"""
 def _fake_b64_image():
     img = Image.new("RGB", (8, 8), color="red")
     buf = BytesIO()
