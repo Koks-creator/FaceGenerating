@@ -1,23 +1,154 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Face Generator{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --accent: #a78bfa;
+            --accent-2: #f472b6;
+            --bg: #0a0612;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            background: var(--bg);
+            color: #e4e4e7;
+            overflow-x: hidden;
+        }
+        /* animated gradient blobs */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: -1;
+            background:
+                radial-gradient(circle at 15% 25%, rgba(167, 139, 250, 0.30), transparent 45%),
+                radial-gradient(circle at 85% 70%, rgba(244, 114, 182, 0.22), transparent 45%),
+                radial-gradient(circle at 50% 110%, rgba(96, 165, 250, 0.18), transparent 50%);
+            animation: shift 22s ease-in-out infinite;
+        }
+        @keyframes shift {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            33%      { transform: translate(-4%, 4%) scale(1.05); }
+            66%      { transform: translate(4%, -3%) scale(0.97); }
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+        }
+        .navbar-brand {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .status-pill {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 14px;
+            border: 1px solid var(--glass-border);
+            border-radius: 999px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+        }
+        .status-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #fbbf24; box-shadow: 0 0 8px #fbbf24;
+            animation: pulse 2s infinite;
+        }
+        .status-dot.ok    { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+        .status-dot.fail  { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* form fields */
+        .form-control, .form-select {
+            background: rgba(0,0,0,0.35);
+            border: 1px solid var(--glass-border);
+            color: #e4e4e7;
+        }
+        .form-control:focus, .form-select:focus {
+            background: rgba(0,0,0,0.45);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.2rem rgba(167,139,250,0.25);
+            color: #e4e4e7;
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            border: none; color: white; font-weight: 600;
+            transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+        }
+        .btn-gradient:hover  { color: white; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(167,139,250,.4); }
+        .btn-gradient:active { transform: translateY(0); }
+        .btn-gradient:disabled { opacity: .6; transform: none; }
+
+        /* alerts */
+        .alert {
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+        }
+        .alert-danger  { background: rgba(220, 38, 38, 0.18); color: #fecaca; }
+        .alert-message { background: rgba(59, 130, 246, 0.18); color: #bfdbfe; }
+    </style>
+    {% block head_extra %}{% endblock %}
+</head>
 <body>
+    <nav class="navbar py-3">
+        <div class="container">
+            <a class="navbar-brand" href="/">~/face_generator</a>
+            <span class="status-pill ms-auto">
+                <span class="status-dot" id="api-dot"></span>
+                <span id="api-status-text">checking…</span>
+            </span>
+        </div>
+    </nav>
 
-<h1>My First Heading</h1>
-<p>My first paragraph.</p>
+    <main class="container py-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="row justify-content-center mb-3">
+                    <div class="col-lg-8 col-xl-7">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endwith %}
 
-<div>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-</div>
+        {% block content %}{% endblock %}
+    </main>
 
-{% block content %}
-{% endblock content %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // live API status
+        fetch('/health').then(r => r.json()).then(d => {
+            const dot = document.getElementById('api-dot');
+            const txt = document.getElementById('api-status-text');
+            if (d.status) { dot.classList.add('ok'); txt.textContent = 'API online'; }
+            else          { dot.classList.add('fail'); txt.textContent = 'API offline'; }
+        }).catch(() => {
+            document.getElementById('api-dot').classList.add('fail');
+            document.getElementById('api-status-text').textContent = 'API offline';
+        });
+    </script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>
