@@ -7,7 +7,9 @@ from wtforms.validators import DataRequired, NumberRange
 
 available_models = [
                     "dcgan",
-                    "wganv4"
+                    "wganv4",
+                    "wganv2_5",
+                    "wganv2_5_2"
                     ]
 
 class MainForm(FlaskForm):
