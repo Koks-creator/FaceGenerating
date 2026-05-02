@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Union, List, Tuple
 from pathlib import Path
 from tensorflow.keras.models import load_model
@@ -55,7 +55,7 @@ if not logger.handlers:
 class FaceGenerator:
     model_path: Union[str, Path]
     load_attention: bool = False
-    _latent_dim: int = field(default=Config.LATENT_DIM, init=False)
+    latent_dim: int = 100
 
     @timeit(logger=logger)
     def __post_init__(self) -> None:
@@ -74,7 +74,7 @@ class FaceGenerator:
     @log_call(logger=logger, hide_res=True, log_params=["num"])
     @timeit(logger=logger)
     def generate_faces(self, num: int = 1) -> List[np.ndarray]:
-        noise = tf.random.normal([num, self._latent_dim]) # x rows of 100 random floats
+        noise = tf.random.normal([num, self.latent_dim]) # x rows of 100 random floats
         generated = self.generator_model(noise, training=False)
         generated = (generated + 1.0) / 2.0  # [-1,1] → [0,1] - because tahn
 
@@ -106,11 +106,12 @@ class FaceGenerator:
 
 if __name__ == "__main__":
     face_generator = FaceGenerator(
-        model_path=r"C:\Users\table\PycharmProjects\MojeCos2\FaceGAN\models\wganv4_generator.h5",
-        load_attention=True
+        model_path=Path(Config.MODELS_PATH) / "wganv4_generator.h5",
+        load_attention=True,
+        latent_dim=100
     )
     res = face_generator.generate_faces(
-        num=20
+        num=32
     )
     face_generator.show_results(results=res)
     # img = res[0]
