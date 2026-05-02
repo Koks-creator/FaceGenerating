@@ -7,9 +7,10 @@ from wtforms.validators import DataRequired, NumberRange
 
 available_models = [
                     "dcgan",
-                    "wganv4",
                     "wganv2_5",
-                    "wganv2_5_2"
+                    "wganv2_5_2",
+                    "wganv2_5_3",
+                    "wganv4",
                     ]
 
 class MainForm(FlaskForm):
@@ -23,5 +24,4 @@ class MainForm(FlaskForm):
 
     models_list_field = SelectField("Select model",
                                     choices=[(m, m) for m in available_models])
-    # resize obrazkow???????????
     submit_field = SubmitField("Submit")
