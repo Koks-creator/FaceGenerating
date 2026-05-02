@@ -1,10 +1,27 @@
 {
     "dcgan": {
         "filename": "generator_dcgan.h5",
-        "load_attention": false
+        "load_attention": false,
+        "latent_dim": 100
+    },
+    "wganv2_5": {
+        "filename": "wgan_2_5_generator.h5",
+        "load_attention": false,
+        "latent_dim": 128
+    },
+    "wganv2_5_2": {
+        "filename": "wgan_2_5_2_generator.h5",
+        "load_attention": false,
+        "latent_dim": 128
+    },
+     "wganv2_5_3": {
+        "filename": "wgan_2_5_3_generator.h5",
+        "load_attention": false,
+        "latent_dim": 128
     },
     "wganv4": {
         "filename": "wganv4_generator.h5",
-        "load_attention": true
+        "load_attention": true,
+        "latent_dim": 100
     }
 }
