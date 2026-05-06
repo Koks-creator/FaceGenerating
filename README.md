@@ -175,8 +175,8 @@ The result: a model that trains in ~15 minutes per epoch (vs ~40 min for v4), wi
 #### **Training metrics**
 *wgan_2_5_3_generator.h5*
 ![alt text](assets/wgan_v2_train.png)
-Discriminator dominates over critic
-
+Generator dominates over critic
+ 
 #### **Samples**
 *wgan_2_5_3_generator.h5*
 
@@ -391,9 +391,11 @@ def build_generator(latent_dim=LATENT_DIM):
 #### **Training metrics**
 *wganv4_1_generator.h5*
 ![alt text](assets/wgan_v4_train.png)
+
 Training is more chaotic.
 
 #### **Training metrics**
 *wganv4_1_generator.h5*
 ![alt text](assets/wgan_4_sample.png)
+
 Some samples are even sharper when compering to wgan 2.5, but "ugly tail" of bad looking samples is longer.
