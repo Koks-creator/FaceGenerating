@@ -6,7 +6,7 @@ In this project I trained DCGAN and WGAN like models using Celeba dataset. The g
 [![video](https://img.youtube.com/vi/1fr4Pur50YM/0.jpg)](https://www.youtube.com/watch?v=1fr4Pur50YM)
 
 ## Setup
-  - ```pip install -r requirements.txt``
+  - ```pip install -r requirements.txt```
 
 ## Packages
 ```
