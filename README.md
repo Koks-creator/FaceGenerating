@@ -786,7 +786,7 @@ class WGAN(tf.keras.Model):
 
 Training is more chaotic.
 
-#### **Training metrics**
+#### **Sample**
 *wganv4_1_generator.h5*
 ![alt text](assets/wgan_4_sample.png)
 
