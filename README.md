@@ -790,6 +790,7 @@ Training is more chaotic.
 
 #### **Sample**
 *wganv4_1_generator.h5*
+
 ![alt text](assets/wgan_4_sample.png)
 
 Some samples are even sharper when compering to wgan 2.5, but "ugly tail" of bad looking samples is longer.
