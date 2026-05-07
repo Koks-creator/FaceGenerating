@@ -490,6 +490,7 @@ Generator dominates over critic
 *wgan_2_5_3_generator.h5*
 
 ![alt text](assets/wgan_2_5_sample.png)
+
 When compering to DCGAN we can see more real looking faces overall and less noise/artifacts.
 
 ### WGAN 4
@@ -782,6 +783,7 @@ class WGAN(tf.keras.Model):
 
 #### **Training metrics**
 *wganv4_1_generator.h5*
+
 ![alt text](assets/wgan_v4_train.png)
 
 Training is more chaotic.
