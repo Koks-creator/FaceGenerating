@@ -908,7 +908,7 @@ Super webb app :))))))))))))))))))))
 ### Init
 On init it sets up logging, checks api connection and creates temp folder for generated images if doesn't exist.
 
-### Run api
+### Run app
 Use command:
 ```shell
 python .\webapp\run.py
