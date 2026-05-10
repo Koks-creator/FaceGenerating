@@ -796,11 +796,127 @@ Training is more chaotic.
 Some samples are even sharper when compering to wgan 2.5, but "ugly tail" of bad looking samples is longer.
 
 
-## Why LeakyReLU in the generator?
+### Why LeakyReLU in the generator?
 The generator builds an image from scratch through many stacked layers. If ReLU zeros out activations early in the network, those "dead" pathways stay dead for the rest of the forward pass — the generator loses capacity to represent certain features. LeakyReLU's small negative slope (0.2) keeps every neuron alive and contributing, so the full network capacity is used.
 
-## Why ReLU in the discriminator/critic?
+### Why ReLU in the discriminator/critic?
 The discriminator only needs to output a single decision (real/fake or a score). It can afford to "drop" features by zeroing them — that's actually useful as implicit feature selection. Plain ReLU works fine here, though many modern GANs (including our WGANs) use LeakyReLU in both networks for symmetry and slightly better gradient flow back to the generator.
 
-## Why tanh on the generator output?
+### Why tanh on the generator output?
 Tanh squashes values to **[-1, 1]**, matching how training images are normalized (pixels scaled from [0, 255] → [-1, 1]). This means the generator's output range and the real images' range are identical — the discriminator can't trivially distinguish "fake" images by their pixel range. Sigmoid (output [0, 1]) would also work but gives weaker gradients near 0 and 1; tanh is symmetric around 0 with better gradient flow.
+
+## API
+Super api made using fastapi.
+
+### Init
+On init it sets up logging, creates database if not exists, creates default users (admin and webapp) if not exists and create instances of face generator for each of the model using configuration from `model_to_load.json` (very important file sar check check).
+
+### Routes
+
+#### **login (/token)**
+Endpoint for logging in to api and getting a jwt token.
+
+#### **alive (/)**
+Checks if api kinda exists :P
+
+#### **health_check (/health)**
+
+#### **list_models (/list_models)**
+
+#### **generate_faces (/generate_faces)**
+This endpoint is protected, so you need to login and get jwt token first. Request body is defined in *GenerateRequest*.
+```python
+import base64
+import requests
+import cv2
+
+from config import Config
+
+def base64_to_numpy(base64_str):
+    image_data = base64.b64decode(base64_str)
+    buffer = BytesIO(image_data)
+    img = Image.open(buffer)
+    return np.array(img)
+
+# Get a token
+resp = requests.post(
+    f"{BASE_URL}/token",
+    data={"username": Config.ADMIN_LOGIN, "password": Config.ADMIN_PASSWORD},
+)
+
+token = resp.json()["access_token"]
+headers = {"Authorization": f"Bearer {token}"}
+
+resp = requests.post(
+    f"{BASE_URL}/generate_faces",
+    json={"model_name": "dcgadn", "gen_num": 4},
+    headers=headers,
+)
+images = resp.json()["images"]
+print(resp.status_code)
+print(resp.content)
+print(len(images))
+
+for ind, img in enumerate(images):
+    num_img = base64_to_numpy(img)
+    num_img = cv2.cvtColor(num_img, cv2.COLOR_BGR2RGB)
+
+    cv2.imwrite(f"img_{ind}.png", num_img)
+```
+
+
+#### **list_users (/list/users/)**
+Endpoint only for users with role admin, used for records data in users table.
+
+```python
+import request
+
+from config import Config
+
+# Get a token
+resp = requests.post(
+    f"{BASE_URL}/token",
+    data={"username": Config.ADMIN_LOGIN, "password": Config.ADMIN_PASSWORD},
+)
+
+token = resp.json()["access_token"]
+headers = {"Authorization": f"Bearer {token}"}
+
+resp = requests.get(
+    f"{BASE_URL}/list/users",
+    headers=headers
+)
+print(json.dumps(resp.json(), indent=4))
+```
+
+### Run api
+Use command:
+```shell
+python .\api\run.py
+```
+
+### Run tests
+Use commands
+```shell
+cd .\api\tests\
+pytest
+```
+
+## Web App
+Super webb app :))))))))))))))))))))
+
+### Init
+On init it sets up logging, checks api connection and creates temp folder for generated images if doesn't exist.
+
+### Run api
+Use command:
+```shell
+python .\webapp\run.py
+```
+
+### Run tests
+Use commands
+```shell
+cd .\webapp\tests\
+pytest
+```
